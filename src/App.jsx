@@ -23,14 +23,25 @@
 // export default App
 
 
-import Layout from './components/layout';
-import ProductList from './components/ProdcutList';
-// import './index.css';
+import React, { useState } from 'react';
+import FormProduct from './components/FormProduct';
+import ListProduct from './components/ListProduct';
 
-export default function App() {
+function App() {
+  const [products, setProducts] = useState([]);
+
+  const handleAddProduct = (product) => {
+    setProducts([...products, product]);
+  };
+
   return (
-    <Layout>
-      <ProductList />
-    </Layout>
+    <div style={{ padding: '20px' }}>
+      <h1>Quản lý sản phẩm</h1>
+      <FormProduct onAdd={handleAddProduct} />
+      <ListProduct items={products} />
+    </div>
   );
 }
+
+export default App;
+
