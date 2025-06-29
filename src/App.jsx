@@ -1,47 +1,45 @@
-// import React from 'react'
-// import Bai1 from './components/bai1'
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import ProductList from './components/ProdcutList';
-
-// // import './App.css'
-
-// function App() {
-//   return (
-//     <Router>
-//       <Routes>
-//         {/* <Route path="/" element={<Home />} /> */}
-//         {/* <Route path="/about" element={<About />} /> */}
-
-// <Route path="/productList" element={<ProductList />} />
-
-//         <Route path="/app" element={<Bai1 />} />
-//       </Routes>
-//     </Router>
-//   );
-// }
-
-// export default App
-
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FormProduct from './components/FormProduct';
 import ListProduct from './components/ListProduct';
 
 function App() {
   const [products, setProducts] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
 
-  const handleAddProduct = (product) => {
-    setProducts([...products, product]);
+  const handleAddOrUpdate = (product) => {
+    if (editingIndex !== null) {
+      const updated = [...products];
+      updated[editingIndex] = product;
+      setProducts(updated);
+      setEditingIndex(null);
+    } else {
+      setProducts([...products, product]);
+    }
+  };
+
+  const handleDelete = (index) => {
+    const filtered = products.filter((_, i) => i !== index);
+    setProducts(filtered);
+  };
+
+  const handleEdit = (index) => {
+    setEditingIndex(index);
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Quản lý sản phẩm</h1>
-      <FormProduct onAdd={handleAddProduct} />
-      <ListProduct items={products} />
+    <div className="container">
+      <h1 className="text-center">Quản lý sản phẩm</h1>
+      <FormProduct
+        onSubmit={handleAddOrUpdate}
+        editingProduct={editingIndex !== null ? products[editingIndex] : null}
+      />
+      <ListProduct
+        products={products}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
+      />
     </div>
   );
 }
 
 export default App;
-

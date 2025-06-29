@@ -1,40 +1,42 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-function FormProduct({ onAdd }) {
+function FormProduct({ onSubmit, editingProduct }) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
 
+  useEffect(() => {
+    if (editingProduct) {
+      setName(editingProduct.name);
+      setPrice(editingProduct.price);
+    }
+  }, [editingProduct]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!name || !price) return;
 
-    onAdd({ name, price: parseFloat(price) });
+    onSubmit({ name, price });
     setName('');
     setPrice('');
   };
 
   return (
-    <form className='form' onSubmit={handleSubmit}>
-      <div className='form-group'>
-        <label className='form-label'>Tên sản phẩm:</label>
-        <input className='form-control'
-          placeholder='Nhập tên sản phẩm'
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-      <div className='form-group'>
-        <label className='form-label'>Giá:</label>
-        <input className='form-control'
-          placeholder='Nhập giá sản phẩm'
-          type="number"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
-      </div>
-      <button className='btn btn-primary mt-2' type="submit">Thêm sản phẩm</button>
+    <form className="mt-4" onSubmit={handleSubmit}>
+      <input className='form-control mb-2'
+        type="text"
+        placeholder="Tên sản phẩm"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <input className='form-control mb-2'
+        type="number"
+        placeholder="Giá"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+      />
+      <button className="btn btn-primary" type="submit">
+        {editingProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
+      </button>
     </form>
   );
 }
