@@ -1,45 +1,44 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import FormProduct from './components/FormProduct';
 import ListProduct from './components/ListProduct';
 
-function App() {
+export default function App() {
   const [products, setProducts] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleAddOrUpdate = (product) => {
-    if (editingIndex !== null) {
-      const updated = [...products];
-      updated[editingIndex] = product;
-      setProducts(updated);
-      setEditingIndex(null);
-    } else {
-      setProducts([...products, product]);
+  // Gọi API để lấy danh sách
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get('http://localhost:1337/api/product'); // API
+      setProducts(res.data);
+    } catch (err) {
+      alert('Lỗi khi tải sản phẩm');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDelete = (index) => {
-    const filtered = products.filter((_, i) => i !== index);
-    setProducts(filtered);
-  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-  const handleEdit = (index) => {
-    setEditingIndex(index);
+  // Hàm thêm sản phẩm
+  const handleAddProduct = async (product) => {
+    try {
+      await axios.post('http://localhost:1337/api/product', product);
+      fetchProducts();
+    } catch (err) {
+      alert('Lỗi khi thêm sản phẩm');
+    }
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center">Quản lý sản phẩm</h1>
-      <FormProduct
-        onSubmit={handleAddOrUpdate}
-        editingProduct={editingIndex !== null ? products[editingIndex] : null}
-      />
-      <ListProduct
-        products={products}
-        onDelete={handleDelete}
-        onEdit={handleEdit}
-      />
+    <div style={{ maxWidth: 600, margin: '0 auto' }}>
+      <h2>Danh sách sản phẩm</h2>
+      <FormProduct onAddProduct={handleAddProduct} />
+      {loading ? <p>Đang tải dữ liệu...</p> : <ListProduct products={products} />}
     </div>
   );
 }
-
-export default App;

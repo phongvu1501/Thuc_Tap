@@ -1,15 +1,26 @@
-function ListProduct({ products, onDelete, onEdit }) {
+import React from 'react';
+
+export default function ListProduct({ products }) {
+  if (products.length === 0) return <p>Chưa có sản phẩm nào</p>;
+
   return (
-    <ul className="list-group mt-4">
-      {products.map((product, index) => (
-        <li key={index} className="list-group-item">
-          {product.name} - {product.price} đ
-          <button className="btn btn-warning btn-sm" onClick={() => onEdit(index)}>Sửa</button>
-          <button className="btn btn-danger btn-sm" onClick={() => onDelete(index)}>Xoá</button>
+    <ul className='list-unstyled'>
+      {products.map((product) => (
+        <li
+          key={product._id}
+          style={{
+            border: '1px solid #ccc',
+            padding: 10,
+            marginBottom: 10,
+            borderRadius: 5,
+          }}
+        >
+          <strong>{product.name}</strong> <br />
+          Giá: {product.price.toLocaleString()}₫ <br />
+          Mô tả : <em>{product.description}</em> <br />
+          <small>Tạo lúc: {new Date(product.createdAt).toLocaleString()}</small>
         </li>
       ))}
     </ul>
   );
 }
-
-export default ListProduct;

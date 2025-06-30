@@ -1,44 +1,60 @@
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-function FormProduct({ onSubmit, editingProduct }) {
+export default function FormProduct({ onAddProduct }) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
-
-  useEffect(() => {
-    if (editingProduct) {
-      setName(editingProduct.name);
-      setPrice(editingProduct.price);
-    }
-  }, [editingProduct]);
+  const [description, setDescription] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !price) return;
+    if (!name || !price || !description) {
+      return alert('Vui lòng nhập đầy đủ thông tin');
+    }
 
-    onSubmit({ name, price });
+    const newProduct = {
+      name,
+      price: Number(price),
+      description,
+    };
+
+    onAddProduct(newProduct);
+
     setName('');
     setPrice('');
+    setDescription('');
   };
 
   return (
-    <form className="mt-4" onSubmit={handleSubmit}>
-      <input className='form-control mb-2'
-        type="text"
-        placeholder="Tên sản phẩm"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input className='form-control mb-2'
-        type="number"
-        placeholder="Giá"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-      <button className="btn btn-primary" type="submit">
-        {editingProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
-      </button>
+    <form onSubmit={handleSubmit} className='mb-4'>
+      <div className='mb-3'>
+        <input className='form-control'
+          type="text"
+          placeholder="Tên sản phẩm"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          autoFocus
+        />
+      </div>
+      <div className='mb-3'>
+        <input className='form-control'
+          type="number"
+          placeholder="Giá"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          autoFocus
+          min="0"
+        />
+      </div>
+      <div className='mb-3'>
+        <textarea
+          className='form-control'
+          placeholder="Mô tả"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          autoFocus
+        />
+      </div>
+      <button className='btn btn-primary' type="submit">Thêm sản phẩm</button>
     </form>
   );
 }
-
-export default FormProduct;
