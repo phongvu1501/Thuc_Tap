@@ -1,27 +1,21 @@
-import React, { useState, useCallback } from 'react';
-import CounterButton from './CounterButton';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import ProductList from './pages/ProductList';
+import ProductForm from './pages/ProductForm';
 
 export default function App() {
-  const [count, setCount] = useState(0);
-  const [text, setText] = useState('');
-
-  const handleIncrement = useCallback(() => {
-    setCount(prev => prev + 1);
-  }, []);
-
-  console.log(' App render');
-
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold">Count: {count}</h1>
-      <CounterButton onClick={handleIncrement} />
-
-      <input
-        className="mt-2 p-2 border border-gray-300 rounded w-full"
-        placeholder="Gõ gì đó để test..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-    </div>
+    <Router>
+      <div className="max-w-xl mx-auto p-6">
+        <nav className="flex justify-between mb-6">
+          <Link to="/" className="text-blue-600 font-semibold">Sản phẩm</Link>
+          <Link to="/add" className="btn btn-success text-white mx-2 mb-2">Thêm</Link>
+        </nav>
+        <Routes>
+          <Route path="/" element={<ProductList />} />
+          <Route path="/add" element={<ProductForm />} />
+          <Route path="/edit/:id" element={<ProductForm />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
