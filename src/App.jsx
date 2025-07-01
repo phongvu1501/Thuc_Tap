@@ -1,37 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import Products from './pages/Products';
-import AddProduct from './pages/AddProduct';
-import About from './pages/About';
-import ThemeToggle from './components/ThemeToggle';
+import React, { useState, useCallback } from 'react';
+import CounterButton from './CounterButton';
 
-function App() {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
-  });
+export default function App() {
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState('');
 
-  useEffect(() => {
-    document.body.className = ''; 
-    document.body.classList.add(theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  const handleIncrement = useCallback(() => {
+    setCount(prev => prev + 1);
+  }, []);
+
+  console.log(' App render');
 
   return (
-    <BrowserRouter>
-      <nav className="navbar">
-        <Link className="navbar-brand" to="/products">Products</Link>
-        <Link className="navbar-brand" to="/add">Add</Link>
-        <Link className="navbar-brand" to="/about">About</Link>
-        <ThemeToggle theme={theme} setTheme={setTheme} />
-      </nav>
+    <div className="p-4">
+      <h1 className="text-xl font-bold">Count: {count}</h1>
+      <CounterButton onClick={handleIncrement} />
 
-      <Routes className="container mt-4">
-        <Route className="container mt-4" path="/products" element={<Products />} />
-        <Route className="container mt-4" path="/add" element={<AddProduct />} />
-        <Route className="container mt-4" path="/about" element={<About />} />
-      </Routes>
-    </BrowserRouter>
+      <input
+        className="mt-2 p-2 border border-gray-300 rounded w-full"
+        placeholder="Gõ gì đó để test..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+    </div>
   );
 }
-
-export default App;
