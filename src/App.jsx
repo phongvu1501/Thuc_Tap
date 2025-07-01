@@ -1,44 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import FormProduct from './components/FormProduct';
-import ListProduct from './components/ListProduct';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import Products from './pages/Products';
+import AddProduct from './pages/AddProduct';
+import About from './pages/About';
+import ThemeToggle from './components/ThemeToggle';
 
-export default function App() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  // Gọi API để lấy danh sách
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get('http://localhost:1337/api/product'); // API
-      setProducts(res.data);
-    } catch (err) {
-      alert('Lỗi khi tải sản phẩm');
-    } finally {
-      setLoading(false);
-    }
-  };
+function App() {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  // Hàm thêm sản phẩm
-  const handleAddProduct = async (product) => {
-    try {
-      await axios.post('http://localhost:1337/api/product', product);
-      fetchProducts();
-    } catch (err) {
-      alert('Lỗi khi thêm sản phẩm');
-    }
-  };
+    document.body.className = ''; 
+    document.body.classList.add(theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto' }}>
-      <h2>Danh sách sản phẩm</h2>
-      <FormProduct onAddProduct={handleAddProduct} />
-      {loading ? <p>Đang tải dữ liệu...</p> : <ListProduct products={products} />}
-    </div>
+    <BrowserRouter>
+      <nav className="navbar">
+        <Link className="navbar-brand" to="/products">Products</Link>
+        <Link className="navbar-brand" to="/add">Add</Link>
+        <Link className="navbar-brand" to="/about">About</Link>
+        <ThemeToggle theme={theme} setTheme={setTheme} />
+      </nav>
+
+      <Routes className="container mt-4">
+        <Route className="container mt-4" path="/products" element={<Products />} />
+        <Route className="container mt-4" path="/add" element={<AddProduct />} />
+        <Route className="container mt-4" path="/about" element={<About />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
