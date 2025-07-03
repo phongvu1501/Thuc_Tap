@@ -1,21 +1,38 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import ProductList from './pages/ProductList';
-import ProductForm from './pages/ProductForm';
+import React, { useEffect } from 'react';
+import Footer from './components/Footer';
 
-export default function App() {
+function App() {
+  useEffect(() => {
+    // Gửi POST tới /api/product
+    fetch('http://localhost:1337/api/product', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Nếu có token, thêm dòng dưới:
+        // Authorization: 'Bearer your_token',
+      },
+      body: JSON.stringify({
+        name: 'Sản phẩm React',
+        price: 150000,
+        description: 'Sản phẩm React cơ bản',
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('✅ Kết quả API:', data);
+      })
+      .catch(err => {
+        console.error('❌ Lỗi API:', err);
+      });
+  }, []);
+
   return (
-    <Router>
-      <div className="max-w-xl mx-auto p-6">
-        <nav className="flex justify-between mb-6">
-          <Link to="/" className="text-blue-600 font-semibold">Sản phẩm</Link>
-          <Link to="/add" className="btn btn-success text-white mx-2 mb-2">Thêm</Link>
-        </nav>
-        <Routes>
-          <Route path="/" element={<ProductList />} />
-          <Route path="/add" element={<ProductForm />} />
-          <Route path="/edit/:id" element={<ProductForm />} />
-        </Routes>
-      </div>
-    </Router>
+    <div className="App">
+      <h1>🛍️ Tạo Sản Phẩm</h1>
+      <p>Kiểm tra console để xem phản hồi từ API.</p>
+      <Footer />
+    </div>
   );
 }
+
+export default App;
