@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../api';
+import api, { apis } from '../api';
 
 const getImageUrl = (imgPath) =>
   imgPath ? `http://localhost:1337${imgPath}` : 'https://via.placeholder.com/120';
@@ -26,8 +26,9 @@ export default function EditProduct() {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await api.get(`/product/${id}`);
-        const { name, price, description, image } = res.data;
+        const endpoint = `${apis.getProduct}/${id}`;
+        const res = await api.get(endpoint);
+        const { name, price, description, image } = res.data.data;
         setProduct({ name, price, description, image });
         setPreview(getImageUrl(image));
       } catch (err) {
@@ -65,7 +66,8 @@ export default function EditProduct() {
       formData.append('description', product.description);
       if (file) formData.append('image', file);
 
-      await api.put(`/product/${id}`, formData, {
+      const endpoint = apis.updateProduct.replace(':id', id);
+      await api.put(endpoint, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 

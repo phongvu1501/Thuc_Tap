@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import api from '../api';
+import api, { apis } from '../api';
 import { FiSave, FiArrowLeft } from 'react-icons/fi';
 
 const getImageUrl = (imgPath) =>
@@ -23,8 +23,8 @@ export default function ProductForm() {
 
   useEffect(() => {
     if (isEdit) {
-      api.get(`/product/${id}`)
-        .then(res => {
+      api.get(`${apis.getProduct}/${id}`)
+        .then((res) => {
           setForm(res.data);
           setPreview(getImageUrl(res.data.image));
         })
@@ -47,44 +47,55 @@ export default function ProductForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('name', form.name);
-    formData.append('price', form.price);
-    formData.append('description', form.description);
-    if (file) {
-      formData.append('image', file);
-    }
-
     try {
-      if (isEdit) {
-        await api.put(`/product/${id}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+      let imagePath = form.image;
+
+      // 👇 CHỈ upload nếu có file
+      if (file) {
+        const uploadForm = new FormData();
+        uploadForm.append('image', file);
+
+        const res = await api.post(apis.uploadImage, uploadForm, {
+          headers: { 'Content-Type': 'multipart/form-data' } // ❗ Bắt buộc
         });
+
+        if (res.data.err !== 0) throw new Error(res.data.message);
+        imagePath = res.data.path;
+      }
+
+      const payload = {
+        name: form.name,
+        price: form.price,
+        description: form.description,
+        image: imagePath
+      };
+
+      if (isEdit) {
+        await api.put(apis.updateProduct.replace(':id', id), payload);
         alert('Đã cập nhật sản phẩm!');
       } else {
-        await api.post('/product', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post(apis.createProduct, payload);
         alert('Đã thêm sản phẩm!');
       }
+
       navigate('/products');
-    } catch {
-      alert('Có lỗi xảy ra!');
+    } catch (err) {
+      console.error(err);
+      alert('Có lỗi xảy ra khi xử lý sản phẩm!');
     }
   };
 
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="fw-bold text-primary">{isEdit ? '🛠️ Cập nhật sản phẩm' : '➕ Thêm sản phẩm mới'}</h3>
-        <button 
-          className="btn btn-outline-dark"
-          onClick={() => navigate('/products')}
-        >
+        <h3 className="fw-bold text-primary">
+          {isEdit ? '🛠️ Cập nhật sản phẩm' : '➕ Thêm sản phẩm mới'}
+        </h3>
+        <button className="btn btn-outline-dark" onClick={() => navigate('/products')}>
           <FiArrowLeft className="me-1" /> Quay lại
         </button>
       </div>
-      
+
       <div className="card shadow border-0">
         <div className="card-body">
           <form onSubmit={handleSubmit} encType="multipart/form-data">
@@ -127,6 +138,7 @@ export default function ProductForm() {
                     onChange={handleChange}
                     placeholder="Mô tả sản phẩm"
                     style={{ height: 120 }}
+                    required
                   />
                   <label htmlFor="description">Mô tả sản phẩm</label>
                 </div>
@@ -140,7 +152,6 @@ export default function ProductForm() {
                   className="form-control mb-3"
                   onChange={handleImageChange}
                 />
-
                 <div className="border rounded shadow-sm p-3 bg-light">
                   {preview ? (
                     <img

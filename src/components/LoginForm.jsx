@@ -15,6 +15,7 @@ export default function LoginForm() {
     e.preventDefault();
     try {
       const res = await api.post("/user/login", form);
+      // await services.api.login(form)
 
       // Lưu token vào localStorage
       saveToken(res.data.data.token);

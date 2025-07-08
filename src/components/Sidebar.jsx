@@ -1,15 +1,22 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiHome, FiBox, FiPlusCircle, FiMenu, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
 import { getUsername } from '../utils/auth';
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [username, setUsername] = useState('');
 
   useEffect(() => {
-    setUsername(getUsername() || '');
+    const user = getUsername();
+    if (!user) {
+      setUsername('Khách');
+      // navigate('/login'); // Bỏ comment nếu muốn ép đăng nhập
+    } else {
+      setUsername(user);
+    }
   }, []);
 
   const isActive = (path) => location.pathname === path;
@@ -32,7 +39,7 @@ export default function Sidebar() {
       <div className="px-3 py-3 border-bottom">
         {!collapsed && (
           <div className="fw-bold text-primary">
-            👤 Xin chào, {username || 'Khách'}
+            👤 Xin chào, {username}
           </div>
         )}
       </div>
