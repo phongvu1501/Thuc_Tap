@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiHome, FiBox, FiPlusCircle, FiMenu, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
-import { getUsername } from '../utils/auth';
+import { getUsername } from '../../utils/auth';
 
 export default function Sidebar() {
   const location = useLocation();

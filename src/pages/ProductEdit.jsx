@@ -20,14 +20,13 @@ export default function EditProduct() {
     image: ''
   });
 
-  const [file, setFile] = useState(null); // file ảnh mới
+  const [file, setFile] = useState(null); // ảnh mới nếu có
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const endpoint = `${apis.getProduct}/${id}`;
-        const res = await api.get(endpoint);
+        const res = await api.get(`${apis.getProduct}/${id}`);
         const { name, price, description, image } = res.data.data;
         setProduct({ name, price, description, image });
         setPreview(getImageUrl(image));
@@ -43,7 +42,7 @@ export default function EditProduct() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduct(prev => ({ ...prev, [name]: value }));
+    setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
@@ -60,16 +59,24 @@ export default function EditProduct() {
     setError('');
 
     try {
-      const formData = new FormData();
-      formData.append('name', product.name);
-      formData.append('price', product.price);
-      formData.append('description', product.description);
-      if (file) formData.append('image', file);
+      // Cập nhật thông tin
+      const infoPayload = {
+        name: product.name,
+        price: product.price,
+        description: product.description
+      };
+      const infoEndpoint = apis.updateProduct.replace(':id', id);
+      await api.put(infoEndpoint, infoPayload);
 
-      const endpoint = apis.updateProduct.replace(':id', id);
-      await api.put(endpoint, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      // Nếu có ảnh mới thì gọi thêm API cập nhật ảnh
+      if (file) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const imageEndpoint = apis.updateProductImage.replace(':id', id);
+        await api.put(imageEndpoint, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
 
       alert('Cập nhật sản phẩm thành công!');
       navigate('/products');
