@@ -1,38 +1,62 @@
-import React, { useEffect } from 'react';
-import Footer from './components/Footer';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import ProductList from './pages/ProductList';
+import ProductForm from './pages/ProductForm';
+import ProductEdit from './pages/ProductEdit';
+import ProductShow from './pages/ProductShow';
+import LoginForm from './components/LoginForm';
+import RegisterForm from './components/RegisterForm';
+import LogoutButton from './components/LogoutButton';
+import PrivateRoute from './components/PrivateRoute';
 
-function App() {
-  useEffect(() => {
-    // Gửi POST tới /api/product
-    fetch('http://localhost:1337/api/product', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Nếu có token, thêm dòng dưới:
-        // Authorization: 'Bearer your_token',
-      },
-      body: JSON.stringify({
-        name: 'Sản phẩm React',
-        price: 150000,
-        description: 'Sản phẩm React cơ bản',
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log('✅ Kết quả API:', data);
-      })
-      .catch(err => {
-        console.error('❌ Lỗi API:', err);
-      });
-  }, []);
+import { ThemeProvider } from './utils/ThemeContext'; // ✅ thêm dòng này
+import './styles/darkmode.css'; // ✅ giữ nguyên
 
+export default function App() {
   return (
-    <div className="App">
-      <h1>🛍️ Tạo Sản Phẩm</h1>
-      <p>Kiểm tra console để xem phản hồi từ API.</p>
-      <Footer />
-    </div>
+    <ThemeProvider> {/* ✅ Bọc toàn bộ ứng dụng */}
+      <Router>
+        <Layout>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />
+            <Route path="/logout" element={<LogoutButton />} />
+
+            {/* Private routes */}
+            <Route path="/" element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            } />
+
+            <Route path="/products" element={
+              <PrivateRoute>
+                <ProductList />
+              </PrivateRoute>
+            } />
+
+            <Route path="/add" element={
+              <PrivateRoute>
+                <ProductForm />
+              </PrivateRoute>
+            } />
+
+            <Route path="/edit/:id" element={
+              <PrivateRoute>
+                <ProductEdit />
+              </PrivateRoute>
+            } />
+
+            <Route path="/show/:id" element={
+              <PrivateRoute>
+                <ProductShow />
+              </PrivateRoute>
+            } />
+          </Routes>
+        </Layout>
+      </Router>
+    </ThemeProvider>
   );
 }
-
-export default App;

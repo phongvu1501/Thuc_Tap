@@ -1,0 +1,24 @@
+body.dark {
+  background-color: #121212;
+  color: white;
+}
+
+body.light {
+  background-color: white;
+  color: black;
+}
+
+/* Cải thiện hiển thị cho Bootstrap / Card / Form */
+body.dark .card,
+body.dark .navbar,
+body.dark .form-control,
+body.dark .btn {
+  background-color: #1f1f1f !important;
+  color: white !important;
+  border-color: #555 !important;
+}
+
+body.dark .nav-link-hover:hover {
+  background-color: #333 !important;
+  color: #90caf9 !important;
+}

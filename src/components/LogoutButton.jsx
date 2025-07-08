@@ -9,13 +9,14 @@ export default function LogoutButton() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${getToken()}`,
+          Authorization: `Bearer, ${getToken()}`,
         },
       });
 
       if (res.ok) {
         removeToken();       
         window.location.href = '/login'; 
+        alert('Đăng xuất thành công!');
       } else {
         alert('Đăng xuất thất bại!');
       }
